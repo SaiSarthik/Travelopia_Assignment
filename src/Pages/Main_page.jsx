@@ -1,22 +1,48 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import axios from 'axios'
 
 const Main_page = () => {
   const [destination, setDestination] = useState('');
   const [interests, setInterests] = useState('');
-  const [travelers, setTravelers] = useState('');
-  const [budget, setBudget] = useState('');
+  const [travelers, setTravelers] = useState(0);
+  const [budget, setBudget] = useState(0);
+  const [email, setEmail] = useState('');
 
-  const handleSubmit = (e) => {
+  const getRecordsCall = async() => {
+      const data = await axios.get('http://localhost:3000/get_requests');
+      console.log('data', data.data);
+  }
+
+  useEffect(()=>{
+    console.log('hello')
+    getRecordsCall()
+  },[])
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Perform actions with the form data (e.g., saving, API call)
-    console.log('Destination:', destination);
-    console.log('Interests:', interests);
-    console.log('Number of Travelers:', travelers);
-    console.log('Budget per Person:', budget);
+  
+    const obj = {
+      destination,
+      interests,
+      travelers,
+      budget,
+      email
+    };
+    console.log('data_AXIOS 1', obj);
+
+    try {
+      const response = await axios.post('http://localhost:3000/travel-request', obj);
+      console.log('data_AXIOS', response);
+      // Handle the response data as needed
+    } catch (error) {
+      console.error('Failed to submit form:', error);
+      // Handle the error
+    }
   };
+  
 
   return (
     <Box component="main" sx={{ padding: '2rem' }}>
@@ -54,6 +80,15 @@ const Main_page = () => {
           fullWidth
           value={budget}
           onChange={(e) => setBudget(e.target.value)}
+          sx={{ marginBottom: '1rem' }}
+        />
+        <TextField
+          label="Your Email"
+          variant="outlined"
+          fullWidth
+          type='email'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           sx={{ marginBottom: '1rem' }}
         />
         <Button variant="contained" type="submit">
