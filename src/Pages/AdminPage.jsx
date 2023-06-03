@@ -9,10 +9,16 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import "./AdminPageCss.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 const AdminPage = () => {
   const [travalopians, setTravalopians] = useState([]);
   const [imageUrls, setImageUrls] = useState({});
+
+  const navigate = useNavigate();
+  const navigateToHome = () => {
+    navigate("/");
+    }; 
 
   const getRecordsCall = async () => {
     try {
@@ -24,9 +30,16 @@ const AdminPage = () => {
       for (const item of data) {
         const query = encodeURIComponent(item.destination);
         const url = `https://api.unsplash.com/photos/random?query=${query}&client_id=mu7afrcEkn_xrkAtAQdAj-_oGcbL9FRjvEIdoDJFK5I`;
-        const res = await axios.get(url);
-        urls[item._id] = res.data.urls.small;
+        
+        try {
+          const res = await axios.get(url);
+          urls[item._id] = res.data.urls.small;
+        } catch (error) {
+          console.log(`Error fetching image for destination ${item.destination}:`, error);
+          urls[item._id] = null; // Set image URL as null for unsuccessful requests
+        }
       }
+      
       setImageUrls(urls);
     } catch (error) {
       console.log("Error fetching records: ", error);
@@ -66,10 +79,12 @@ const AdminPage = () => {
   };
 
   if (travalopians.length === 0) {
-    return <h1 style={{display:'flex', justifyContent:'center', alignItems:'center', height:'100%'}}>No records found.</h1>;
+    return <h1 style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>No records found.</h1>;
   }
 
   return (
+    <>
+    <Button variant="contained" sx={{width:'100px', mt:'40px', ml:'40px'}} onClick={navigateToHome}>Go Back</Button>
     <div className="card-grid">
       <ToastContainer
         position="top-left"
@@ -86,11 +101,13 @@ const AdminPage = () => {
       {travalopians.map((each) => (
         <StyledCard key={each._id}>
           <CardContent>
-            <img
-              src={imageUrls[each._id]}
-              alt={each.destination}
-              style={{ maxWidth: "100%", maxHeight: "200px", objectFit: "cover" }}
-            />
+            {imageUrls[each._id] && (
+              <img
+                src={imageUrls[each._id]}
+                alt={each.destination}
+                style={{ maxWidth: "100%", maxHeight: "200px", objectFit: "cover" }}
+              />
+            )}
             <Typography variant="h5" component="h3">
               {each.destination}
             </Typography>
@@ -111,6 +128,8 @@ const AdminPage = () => {
         </StyledCard>
       ))}
     </div>
+    </>
+
   );
 };
 
