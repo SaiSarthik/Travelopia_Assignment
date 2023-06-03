@@ -1,0 +1,20 @@
+.card-grid {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 4rem;
+    padding: 1rem;
+    margin: 2rem;
+    flex-wrap: wrap;
+    min-width: 200px;
+  }
+  
+  
+.card-grid .MuiCard-root {
+  width: 100%;
+  max-width: 345px;
+  
+}
+
+  
+  
