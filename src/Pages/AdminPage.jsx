@@ -17,7 +17,7 @@ const AdminPage = () => {
   const [travalopians, setTravalopians] = useState([]);
   const [imageUrls, setImageUrls] = useState({});
 
-  const [cookies, removeCookie] = useCookies(['token_travelopia'], { path: '/' });
+  const [cookies, removeCookie] = useCookies(['token_travelopia']);
   const token = cookies.token_travelopia;
 
     const isLoggedIn = token && token?.length > 9  ? true : false;
@@ -73,22 +73,23 @@ const AdminPage = () => {
     } else {
       getRecordsCall();
     }
-  }, []);
+  }, [getRecordsCall]);
+  
 
   const notify = (text) => toast(text);
 
   const handleDelete = async (id) => {
-    setTravalopians((prev) => prev.filter((each) => each._id !== id));
-
     try {
       const response = await axios.delete(
-        `https://travelopiabe-production.up.railway.app/delete_request/${id}`, {
+        `https://travelopiabe-production.up.railway.app/delete_request/${id}`,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
-          }
+          },
         }
       );
       if (response.status === 200) {
+        setTravalopians((prev) => prev.filter((each) => each._id !== id));
         notify("Deleted Successfully");
       } else {
         notify("Something went wrong");
