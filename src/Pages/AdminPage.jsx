@@ -22,7 +22,7 @@ const AdminPage = () => {
 
   const getRecordsCall = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/get_requests");
+      const response = await axios.get("https://travelopiabe-production.up.railway.app/get_requests");
       const data = response.data;
       setTravalopians(data);
 
@@ -65,7 +65,7 @@ const AdminPage = () => {
 
     try {
       const response = await axios.delete(
-        `http://localhost:3000/delete_request/${id}`
+        `https://travelopiabe-production.up.railway.app/delete_request/${id}`
       );
       if (response.status === 200) {
         notify("Deleted Successfully");

@@ -31,7 +31,7 @@ const Main_page = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:3000/travel-request', obj);
+      const response = await axios.post(`https://travelopiabe-production.up.railway.app/travel-request`, obj);
 
       if (response.status === 200) {
         notify('Request Sent Successfully');
