@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FormControl, MenuItem, Select } from '@mui/material';
 import { Carousel } from 'react-responsive-carousel';
+import { useNavigate } from 'react-router-dom';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const Main_page = () => {
@@ -16,6 +17,12 @@ const Main_page = () => {
   const [budget, setBudget] = useState(0);
   const [email, setEmail] = useState('');
   const [carouselImages, setCarouselImages] = useState([]);
+
+  const navigate = useNavigate();
+
+  const navigateToAdminLogin = () => {
+    navigate('/admin/login')
+  }
 
   const notify = (text) => toast(text);
 
@@ -88,6 +95,11 @@ const Main_page = () => {
           ))}
         </Carousel>
       )}
+    <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
+      <Button variant='contained' sx={{ width: '150px', padding:'10px', margin:'40px' }} onClick={navigateToAdminLogin}>
+        I AM ADMIN
+      </Button>
+    </div>
     <Box
       component="main"
       sx={{

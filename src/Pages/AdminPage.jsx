@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -11,29 +11,42 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from 'react-cookie';
+import useAuth from "../Utils/UseAuth";
+
 const AdminPage = () => {
   const [travalopians, setTravalopians] = useState([]);
   const [imageUrls, setImageUrls] = useState({});
+
+  const [cookies, removeCookie] = useCookies(['token_travelopia'], { path: '/' });
+  const token = cookies.token_travelopia;
+
+    const isLoggedIn = token && token != 'undefined'  ? true : false;
+    useAuth(isLoggedIn) //custom hook to check if user is logged in
 
   const navigate = useNavigate();
   const navigateToHome = () => {
     navigate("/");
     }; 
 
-  const getRecordsCall = async () => {
+  const getRecordsCall = useCallback(async () => {
     try {
-      const response = await axios.get("https://travelopiabe-production.up.railway.app/get_requests");
+      const response = await axios.get("http://localhost:3000/get_requests", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       const data = response.data;
       setTravalopians(data);
 
       const urls = {};
       for (const item of data) {
         const query = encodeURIComponent(item.destination);
-        const url = `https://api.unsplash.com/photos/random?query=${query}&client_id=mu7afrcEkn_xrkAtAQdAj-_oGcbL9FRjvEIdoDJFK5I`;
+        const url = `https://api.unsplash.com/photos/random?query=${query}&client_id=mu7afrcEkn_xrkAtAQdAj-_oGcbL9FRjvEIdoDJFK5I&fit=fill&w=400&h=300`;
         
         try {
           const res = await axios.get(url);
-          urls[item._id] = res.data.urls.small;
+          urls[item._id] = res.data.urls.regular;
         } catch (error) {
           console.log(`Error fetching image for destination ${item.destination}:`, error);
           urls[item._id] = null; // Set image URL as null for unsuccessful requests
@@ -44,7 +57,7 @@ const AdminPage = () => {
     } catch (error) {
       console.log("Error fetching records: ", error);
     }
-  };
+  },[token])
 
   const StyledCard = styled(Card)(({ theme }) => ({
     display: "flex",
@@ -56,7 +69,7 @@ const AdminPage = () => {
 
   useEffect(() => {
     getRecordsCall();
-  }, []);
+  }, [getRecordsCall]);
 
   const notify = (text) => toast(text);
 
@@ -65,7 +78,11 @@ const AdminPage = () => {
 
     try {
       const response = await axios.delete(
-        `https://travelopiabe-production.up.railway.app/delete_request/${id}`
+        `http://localhost:3000/delete_request/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
       );
       if (response.status === 200) {
         notify("Deleted Successfully");
@@ -78,8 +95,20 @@ const AdminPage = () => {
     }
   };
 
+  const  handleLogout = () => {
+    removeCookie('token_travelopia');
+    navigate('/admin/login');
+  }
+
   if (travalopians.length === 0) {
-    return <h1 style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>No records found.</h1>;
+    return (
+      <>
+        <h1 style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>No records found.</h1>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
+          <Button onClick={handleLogout} variant='contained' sx={{ width: '150px', padding:'10px', margin:'40px' }}>Logout</Button>
+        </div>
+      </>
+    );
   }
 
   return (
@@ -100,7 +129,7 @@ const AdminPage = () => {
       />
       {travalopians.map((each) => (
         <StyledCard key={each._id}>
-          <CardContent>
+          <CardContent style={{display:'flex', flexDirection:'column'}}>
             {imageUrls[each._id] && (
               <img
                 src={imageUrls[each._id]}
@@ -115,18 +144,22 @@ const AdminPage = () => {
               {each.interests}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {each.email}
+              <a href={`mailto:${each.email}`}>{each.email}</a>
             </Typography>
           </CardContent>
           <IconButton
             className="delete-button"
             aria-label="delete"
+            style={{alignSelf:'end'}}
             onClick={() => handleDelete(each._id)}
           >
             <DeleteIcon />
           </IconButton>
         </StyledCard>
       ))}
+    </div>
+    <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
+      <Button onClick={handleLogout} variant='contained' sx={{ width: '150px', padding:'10px', margin:'40px' }}>Logout</Button>
     </div>
     </>
 

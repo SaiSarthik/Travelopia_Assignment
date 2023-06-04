@@ -14,7 +14,7 @@ const Footer = () => {
       }}
     >
       <Typography variant="body2" sx={{ marginBottom: '1rem' }}>
-        &copy; {new Date().getFullYear()} Your Travel Website. All rights reserved.
+        &copy; {new Date().getFullYear()} Travelopia_Assignment. All rights reserved.
       </Typography>
       <Typography variant="body2">
         Created with{' '}
