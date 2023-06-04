@@ -10,8 +10,7 @@ const AdminLoginPage = () => {
   const [password, setPassword] = useState('');
   
   const [cookies, setCookie] = useCookies(['token_travelopia']); // Set up cookies
-
-  console.log('COOKIE', cookies?.token)
+  console.log('COOKIE', cookies?.token_travelopia)
 
   const navigate = useNavigate();
 
@@ -42,6 +41,12 @@ const AdminLoginPage = () => {
       console.error('Failed to login:', error);
     }
   };
+
+  if(cookies.token_travelopia != undefined){
+    console.log('Navigating to /admin/dashboard');
+    navigate('/admin/dashboard');
+    return null; // Return null to avoid rendering the login form
+  }
 
   return (
     <div className="admin-login-page">
