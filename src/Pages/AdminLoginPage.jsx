@@ -38,7 +38,7 @@ const AdminLoginPage = () => {
 
       if (response.status === 200) {
         const token = response.data.token;
-        setCookie('token_travelopia', token, { path: '/admin', maxAge: 86400, secure:true });
+        setCookie('token_travelopia', token, { path: '/admin', maxAge: 86400, secure:true, sameSite:'none' });
         navigate('/admin/dashboard')
       } else {
         notify('Please enter valid credentials');
