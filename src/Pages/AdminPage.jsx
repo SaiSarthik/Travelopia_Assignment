@@ -12,7 +12,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from 'react-cookie';
-import useAuth from "../Utils/UseAuth";
 
 const AdminPage = () => {
   const [travalopians, setTravalopians] = useState([]);
@@ -21,11 +20,12 @@ const AdminPage = () => {
   const [cookies, removeCookie] = useCookies(['token_travelopia'], { path: '/' });
   const token = cookies.token_travelopia;
 
-    const isLoggedIn = token && token != 'undefined'  ? true : false;
-    useAuth(isLoggedIn) //custom hook to check if user is logged in
-
-  const navigate = useNavigate();
-  const navigateToHome = () => {
+    const isLoggedIn = token && token?.length > 9  ? true : false;
+    
+  
+    const navigate = useNavigate();
+    isLoggedIn ? '' : navigate('/admin/login')
+    const navigateToHome = () => {
     navigate("/");
     }; 
 
@@ -68,8 +68,12 @@ const AdminPage = () => {
   }));
 
   useEffect(() => {
-    getRecordsCall();
-  }, [getRecordsCall]);
+    if (!isLoggedIn) {
+      navigate("/admin/login");
+    } else {
+      getRecordsCall();
+    }
+  }, []);
 
   const notify = (text) => toast(text);
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,12 @@ const AdminLoginPage = () => {
   console.log('COOKIE', cookies?.token_travelopia)
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (cookies.token_travelopia?.length > 9) {
+      navigate('/admin/dashboard');
+    }
+  }, [cookies.token_travelopia, navigate]);
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -32,7 +38,7 @@ const AdminLoginPage = () => {
 
       if(response.status === 200 && token){
           // Store the token securely
-          setCookie('token_travelopia', token, { path: '/admin', sameSite: 'none', secure: true });          
+          setCookie('token_travelopia', token, { path: '/admin' });          
           navigate('/admin/dashboard');
         }
 
@@ -41,11 +47,7 @@ const AdminLoginPage = () => {
     }
   };
 
-  if(cookies.token_travelopia != undefined){
-    console.log('Navigating to /admin/dashboard');
-    navigate('/admin/dashboard');
-    return null; // Return null to avoid rendering the login form
-  }
+ 
 
   return (
     <div className="admin-login-page">
