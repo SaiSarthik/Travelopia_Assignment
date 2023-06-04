@@ -31,7 +31,7 @@ const AdminPage = () => {
 
   const getRecordsCall = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:3000/get_requests", {
+      const response = await axios.get("https://travelopiabe-production.up.railway.app/get_requests", {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -78,7 +78,7 @@ const AdminPage = () => {
 
     try {
       const response = await axios.delete(
-        `http://localhost:3000/delete_request/${id}`, {
+        `https://travelopiabe-production.up.railway.app/delete_request/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           }

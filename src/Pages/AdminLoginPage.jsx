@@ -28,7 +28,7 @@ const AdminLoginPage = () => {
 
     try {
       // Send a POST request to the server to authenticate the admin
-      const response = await axios.post('http://localhost:3000/admin/login', { username, password });
+      const response = await axios.post('https://travelopiabe-production.up.railway.app/admin/login', { username, password });
       const token = response.data.token;
 
       if(response.status === 200 && token){
