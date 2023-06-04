@@ -4,13 +4,15 @@ import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 
 import './AdminLoginPage.css'; // Import the CSS file for styling
+import { ToastContainer, toast } from 'react-toastify';
 
 const AdminLoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   
   const [cookies, setCookie] = useCookies(['token_travelopia']); // Set up cookies
-  console.log('COOKIE', cookies?.token_travelopia)
+  
+  console.log('COOKIE', cookies.token_travelopia)
 
   const navigate = useNavigate();
 
@@ -18,7 +20,10 @@ const AdminLoginPage = () => {
     if (cookies.token_travelopia?.length > 9) {
       navigate('/admin/dashboard');
     }
-  }, [cookies.token_travelopia, navigate]);
+  }, []);
+
+  const notify = (text) => toast.error(text);
+
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -38,32 +43,45 @@ const AdminLoginPage = () => {
 
       if(response.status === 200 && token){
           // Store the token securely
-          setCookie('token_travelopia', token, { path: '/admin', sameSite:'none', secure:true });          
+          setCookie('token_travelopia', token, { path: '/admin', maxAge: 86400 });  
           navigate('/admin/dashboard');
         }
 
     } catch (error) {
       console.error('Failed to login:', error);
+      notify('Please Enter Valid Credentials');
     }
   };
 
  
 
   return (
-    <div className="admin-login-page">
-      <h2 className="admin-login-title">Admin Login</h2>
-      <form onSubmit={handleLogin} className="admin-login-form">
-        <div className="admin-login-form-group">
-          <label htmlFor="username" className="admin-login-label">Username:</label>
-          <input type="text" id="username" value={username} onChange={handleUsernameChange} className="admin-login-input" />
-        </div>
-        <div className="admin-login-form-group">
-          <label htmlFor="password" className="admin-login-label">Password:</label>
-          <input type="password" id="password" value={password} onChange={handlePasswordChange} className="admin-login-input" />
-        </div>
-        <button type="submit" className="admin-login-button">Login</button>
-      </form>
-    </div>
+    <>
+     <ToastContainer
+        position= "top-center"
+        autoClose= {5000}
+        hideProgressBar= {false}
+        closeOnClick= {true}
+        pauseOnHover= {true}
+        draggable= {true}
+        progress= {undefined}
+        theme= "colored"
+      />
+      <div className="admin-login-page">
+        <h2 className="admin-login-title">Admin Login</h2>
+        <form onSubmit={handleLogin} className="admin-login-form">
+          <div className="admin-login-form-group">
+            <label htmlFor="username" className="admin-login-label">Username:</label>
+            <input type="text" id="username" value={username} onChange={handleUsernameChange} className="admin-login-input" />
+          </div>
+          <div className="admin-login-form-group">
+            <label htmlFor="password" className="admin-login-label">Password:</label>
+            <input type="password" id="password" value={password} onChange={handlePasswordChange} className="admin-login-input" />
+          </div>
+          <button type="submit" className="admin-login-button">Login</button>
+        </form>
+      </div>
+    </>
   );
 };
 
