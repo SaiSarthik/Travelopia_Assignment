@@ -32,8 +32,7 @@ const AdminLoginPage = () => {
 
       if(response.status === 200 && token){
           // Store the token securely
-          setCookie('token_travelopia', token, { path: '/admin' });
-          
+          setCookie('token_travelopia', token, { path: '/admin', sameSite: 'none', secure: true });          
           navigate('/admin/dashboard');
         }
 
